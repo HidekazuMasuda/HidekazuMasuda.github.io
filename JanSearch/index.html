@@ -47,6 +47,7 @@
                     if (data.error !== undefined) return;
                     if (data.searchInformation.totalResults === "0") {
                     $scope.results.push({name: "商品が見つかりませんでした。", code:$scope.readText});
+                        $scope.readText = "";
                         return;
                     }
                     $scope.results.push({name: data.items[0].title, code:$scope.readText});
