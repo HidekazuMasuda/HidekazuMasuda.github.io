@@ -1,0 +1,108 @@
+<head>
+    <link rel="stylesheet" href="node_modules/onsenui/css/onsenui.css" />
+    <link rel="stylesheet" href="node_modules/onsenui/css/onsen-css-components-blue-basic-theme.css" />
+    <script src="node_modules/onsenui/js/onsenui_all.js"></script>
+    <script>
+        var module = ons.bootstrap('myApp', ['onsen']);
+        module.controller('myController', function($scope, $http, $location){
+            $scope.apiKey = "";
+            $scope.searchId = "";
+            $scope.onload = function(){
+                location.search.substring(1).split('&').forEach(function(element){
+                    var key = element.split('=')[0];
+                    var value = element.split('=')[1];
+                    switch (key) {
+                        case "key_api": 
+                            $scope.apiKey = value;
+                            break;
+                        case "key_search":
+                            $scope.searchId = value;
+                            break;
+                    }
+                    console.log(element);
+                });
+            }
+            $scope.results = [
+                {name:"あ", code:"999999999"},
+                {name:"い", code:"111111111"}
+            ];
+            $scope.failed = false;
+            $scope.errorMessage = "エラーよ";
+            $scope.onfocus = function(){
+                if (this.apiKey === "" || this.searchId === "") {
+                    this.failed = true;
+                    this.errorMessage = "APIキーまたは検索キーが入力されていません。";
+                    return;
+                }
+                this.failed = false;
+            }
+            $scope.readText = "490127723940";
+            $scope.onchange = function(){
+                if (this.failed === true) return;
+                if (this.readText === undefined || this.readText.length !== 13) return;
+                this.readText;
+                var googleApiUrl = "https://www.googleapis.com/customsearch/v1?key=" + this.apiKey 
+                    + "&cx=" + this.searchId + "&q=" + this.readText;
+                $http({method: 'GET', url: googleApiUrl}).success(function(data, status){
+                    if (data.error !== undefined) return;
+                    if (data.searchInformation.totalResults === "0") {
+                    $scope.results.push({name: "商品が見つかりませんでした。", code:$scope.readText});
+                        return;
+                    }
+                    $scope.results.push({name: data.items[0].title, code:$scope.readText});
+                    $scope.readText = "";
+                }).error(function(data, status){});
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <ons-page ng-controller="myController">
+      <ons-toolbar>
+        <div class="center">リーダーによる連続読み取り</div>
+      </ons-toolbar>
+
+      <ons-list modifier="inset" style="margin-top: 10px" ng-init="onload()">
+        <ons-list-header>接続設定</ons-list-header>
+        <ons-list-item>
+          <input type="text" class="text-input text-input--transparent" ng-model="apiKey"
+          placeholder="Google API KEY" style="width: 100%">
+        </ons-list-item>
+        <ons-list-item>
+          <input type="text" class="text-input text-input--transparent" ng-model="searchId"
+          placeholder="Custom serach engine ID" style="width: 100%">
+        </ons-list-item>
+      </ons-list>
+
+      <ons-list modifier="inset" style="margin-top: 10px">
+        <ons-list-header>読み取り</ons-list-header>
+        <form name="myForm">
+            <ons-list-item>
+                <input type="text" class="text-input text-input--transparent" name="readTextInput"
+                ng-model="readText"
+                ng-change="onchange()"
+                ng-focus="onfocus()"
+                ng-pattern="/^[0-9]{13}$/"
+                placeholder="この領域をタップして読み取り開始してください" style="width: 100%" required></input>
+            </ons-list-item>
+            <ons-list-item ng-show="failed" style="color:red">{{errorMessage}}</ons-list-item>
+            <ons-list-item ng-show="myForm.readTextInput.$error.pattern" style="color:red">
+                13桁の数値で入力してください</ons-list-item>
+        </form>
+      </ons-list>
+
+      <ons-list modifier="inset" style="margin-top: 10px">
+        <ons-list-header>読取り結果</ons-list-header>
+        <ons-list-item ng-repeat="result in results">
+            <ons-row>
+                <ons-col>{{ result.code }}</ons-col>
+                <ons-col>{{ result.name }}</ons-col>
+            </ons-row>
+        </ons-list-item>
+      </ons-list>
+
+
+    </ons-page>
+
+  </body>
