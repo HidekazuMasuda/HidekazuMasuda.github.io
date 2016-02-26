@@ -7,10 +7,10 @@ window.onload = function(){
 		document.getElementById("count1").innerHTML = ++$count1;
 	}
 }
-angular.module('myApp', []).controller('myController', function($scope){
-    $scope.count2 = 0;
-    $scope.blurHandler = function(){
-//        ++$scope.count2;
+angular.module('myApp', []).controller('myController', function(){
+    this.count2 = 0;
+    this.blurHandler = function(){
+        this.count2++;
         alert('ngblur');
     }
 });
@@ -20,9 +20,9 @@ angular.module('myApp', []).controller('myController', function($scope){
 <input type="text" id="sample1"><br>
 フォーカス外し回数：<span id="count1">0</span>
 <h2>AngularJSによる指定</h2>
-<div ng-controller="myController">
-<input type="text" id="sample2" ng-blur="blurHandler()" onblur="alert('onblur')"><br>
-フォーカス外し回数：{{count2}}
+<div ng-controller="myController as my">
+<input type="text" id="sample2" ng-blur="my.blurHandler()" onblur="alert('onblur')"><br>
+フォーカス外し回数：{{my.count2}}
 </div>
 
 </body>
