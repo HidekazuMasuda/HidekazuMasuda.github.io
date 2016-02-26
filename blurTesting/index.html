@@ -1,0 +1,14 @@
+<html lang="ja">
+<script>
+window.onload = function(){
+	var $count1 = 0;
+	document.getElementById("sample1").onblur = function(){
+		document.getElementById("count1").innerHTML = ++$count1;
+	}
+}
+</script>
+<body>
+<input type="text" id="sample1"><br>
+フォーカス外し回数：<span id="count1">0</span>
+</body>
+</html>
