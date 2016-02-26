@@ -1,4 +1,5 @@
-<html lang="ja">
+<html lang="ja" ng-app="myApp">
+<script src="bower_components/angular/angular.js"></script>
 <script>
 window.onload = function(){
 	var $count1 = 0;
@@ -6,9 +7,22 @@ window.onload = function(){
 		document.getElementById("count1").innerHTML = ++$count1;
 	}
 }
+angular.module('myApp', []).controller('myController', function($scope){
+    $scope.count2 = 0;
+    $scope.blurHandler = function(){
+        ++$scope.count2;
+    }
+});
 </script>
 <body>
+<h2>getElementByIdによる指定</h2>
 <input type="text" id="sample1"><br>
 フォーカス外し回数：<span id="count1">0</span>
+<h2>AngularJSによる指定</h2>
+<div ng-controller="myController">
+<input type="text" id="sample2" ng-blur="blurHandler()"><br>
+フォーカス外し回数：{{count2}}
+</div>
+
 </body>
 </html>
